@@ -35,11 +35,13 @@ services:
       GARAGE_DEFAULT_BUCKET: ${GARAGE_DEFAULT_BUCKET:-backups}
     volumes:
       - ./garage/garage.toml:/etc/garage.toml:ro
+      # Metadaten bleiben auf der Systemplatte (klein, latenzempfindlich).
       - garage-meta:/var/lib/garage/meta
-      - garage-data:/var/lib/garage/data
+      # Objektdaten liegen auf dem wachsenden HDD-Pool, siehe scripts/lvm-*.sh
+      # und STORAGE.md. Pfad ueber BACKUP_POOL_MOUNT in .env anpassbar.
+      - ${BACKUP_POOL_MOUNT:-/mnt/backup-pool}:/var/lib/garage/data
 
 volumes:
   netbird-client:
     name: netbird-client
   garage-meta:
-  garage-data:

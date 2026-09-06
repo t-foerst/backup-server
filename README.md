@@ -88,6 +88,6 @@ docker compose exec garage /garage key list
 
 ## Daten & Updates
 
-- Garage-Daten liegen in den Docker-Volumes `garage-meta` (Metadaten) und `garage-data` (Objektdaten). Sollen sie auf einer bestimmten Platte/einem bestimmten Pfad liegen, in `docker-compose.yml` durch Bind-Mounts ersetzen, z. B. `/mnt/backup-disk/garage-data:/var/lib/garage/data`.
+- Metadaten (`garage-meta`) liegen in einem Docker-Volume auf der Systemplatte. Die eigentlichen Objektdaten liegen auf einem erweiterbaren LVM-Pool aus HDDs, der unter `BACKUP_POOL_MOUNT` (`.env`, Standard `/mnt/backup-pool`) eingehaengt und per Bind-Mount in den Garage-Container gegeben wird. Einrichtung und das spaetere Hinzufuegen weiterer Platten: siehe [STORAGE.md](./STORAGE.md).
 - Updates: `docker compose pull && docker compose up -d`
 - Image-Versionen sind gepinnt (`dxflrs/garage:v2.3.0`), `netbirdio/netbird:latest` folgt dagegen immer der neuesten Version - bei Bedarf in `docker-compose.yml` auf einen festen Tag umstellen.
