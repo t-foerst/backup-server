@@ -1,0 +1,19 @@
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "sqlite"
+
+# Single node, no replication - this server is the only copy Garage keeps.
+# The client-side backup tool (restic/rclone/borg/...) is your redundancy.
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+# rpc_secret comes from the GARAGE_RPC_SECRET env var (see docker-compose.yml / .env)
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+
+[admin]
+api_bind_addr = "[::]:3903"
+# admin_token comes from the GARAGE_ADMIN_TOKEN env var (see docker-compose.yml / .env)

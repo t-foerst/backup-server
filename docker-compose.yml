@@ -1,0 +1,45 @@
+services:
+  netbird:
+    image: netbirdio/netbird:latest
+    container_name: backup-server-netbird
+    hostname: ${NETBIRD_HOSTNAME:-backup-server}
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+    devices:
+      - /dev/net/tun
+    environment:
+      NB_SETUP_KEY: ${NETBIRD_SETUP_KEY}
+      NB_MANAGEMENT_URL: ${NETBIRD_MANAGEMENT_URL:-https://api.netbird.io}
+    volumes:
+      - netbird-client:/var/lib/netbird
+
+  garage:
+    image: dxflrs/garage:v2.3.0
+    container_name: backup-server-garage
+    restart: unless-stopped
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    ports:
+      # S3 API - point your backup client (restic/rclone/...) here
+      - "3900:3900"
+      # Admin API - bucket/key management, protected by GARAGE_ADMIN_TOKEN
+      - "3903:3903"
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
+      GARAGE_DEFAULT_ACCESS_KEY: ${GARAGE_DEFAULT_ACCESS_KEY}
+      GARAGE_DEFAULT_SECRET_KEY: ${GARAGE_DEFAULT_SECRET_KEY}
+      GARAGE_DEFAULT_BUCKET: ${GARAGE_DEFAULT_BUCKET:-backups}
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+
+volumes:
+  netbird-client:
+    name: netbird-client
+  garage-meta:
+  garage-data:
