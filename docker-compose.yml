@@ -41,6 +41,22 @@ services:
       # und STORAGE.md. Pfad ueber BACKUP_POOL_MOUNT in .env anpassbar.
       - ${BACKUP_POOL_MOUNT:-/mnt/backup-pool}:/var/lib/garage/data
 
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    container_name: backup-server-node-exporter
+    restart: unless-stopped
+    pid: host
+    network_mode: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+
 volumes:
   netbird-client:
     name: netbird-client
